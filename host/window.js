@@ -10,9 +10,18 @@ function server() {
   var Out = window.Out = []
   window.addEventListener("server", function(event) {
     var packet = event.detail
-    try { Out[packet.to] = window.eval(packet.source) }
-    catch (error) { Out[packet.to] = error }
-    send({ from: packet.to, message: Out[packet.to] })
+    var result = null
+    try {
+      Out[packet.to] = window.eval(packet.source)
+      result = {result: {value: Out[packet.to]},
+                error: null}
+    }
+    catch (error) {
+      Out[packet.to] = error
+      result = {result: null,
+                error: {value: error}}
+    }
+    send({ from: packet.to, result: result })
   }, false)
 }
 
